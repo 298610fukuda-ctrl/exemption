@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>基本情報技術者試験 修了認定過去問アプリ</title>
+<!-- MathJax for rendering math equations -->
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+  :root {
+    --primary: #0284c7;
+    --primary-hover: #0369a1;
+    --bg: #f1f5f9;
+    --card: #ffffff;
+    --text: #0f172a;
+    --border: #cbd5e1;
+    --correct-bg: #dcfce7;
+    --correct-border: #16a34a;
+    --correct-text: #14532d;
+    --wrong-bg: #fee2e2;
+    --wrong-border: #dc2626;
+    --wrong-text: #7f1d1d;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 20px 10px;
+    line-height: 1.6;
+  }
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  h1 {
+    font-size: 1.5rem;
+    margin: 0 0 10px 0;
+  }
+  /* Tab Navigation */
+  .tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    justify-content: center;
+  }
+  .tab-btn {
+    padding: 10px 24px;
+    background: #e2e8f0;
+    border: 2px solid transparent;
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #475569;
+    transition: all 0.2s;
+  }
+  .tab-btn.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+  }
+  .tab-btn:hover:not(.active) {
+    background: #cbd5e1;
+  }
+  /* Score Bar */
+  .score-sticky {
+    position: sticky;
+    top: 10px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(4px);
+    border: 1px solid var(--border);
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+  }
+  .score-info {
+    font-weight: bold;
+    font-size: 1rem;
+  }
+  .btn-reset {
+    background: #f1f5f9;
+    border: 1px solid #94a3b8;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  .btn-reset:hover { background: #e2e8f0; }
+  /* Question Card */
+  .q-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .q-num {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--primary);
+    margin-bottom: 12px;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 8px;
+  }
+  .q-body {
+    font-size: 1rem;
+    margin-bottom: 20px;
+    white-space: pre-wrap;
+  }
+  .opt-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .opt-item {
+    text-align: left;
+    background: #fff;
+    border: 1px solid var(--border);
+    padding: 14px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: flex-start;
+    transition: all 0.15s;
+  }
+  .opt-item:hover:not(.disabled) {
+    background: #f8fafc;
+    border-color: #94a3b8;
+  }
+  .opt-tag {
+    font-weight: bold;
+    margin-right: 12px;
+    color: var(--primary);
+    flex-shrink: 0;
+  }
+  .opt-item.correct {
+    background: var(--correct-bg) !important;
+    border-color: var(--correct-border) !important;
+    color: var(--correct-text) !important;
+    font-weight: bold;
+  }
+  .opt-item.wrong {
+    background: var(--wrong-bg) !important;
+    border-color: var(--wrong-border) !important;
+    color: var(--wrong-text) !important;
+  }
+  .opt-item.disabled { cursor: default; opacity: 0.9; }
+  /* Explanation */
+  .exp-section {
+    display: none;
+    margin-top: 20px;
+    padding: 16px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    white-space: pre-wrap;
+  }
+  .exp-section.show { display: block; }
+  .is-correct { background: #f0fdf4; border-left: 5px solid var(--correct-border); }
+  .is-wrong { background: #fef2f2; border-left: 5px solid var(--wrong-border); }
+  .exp-header { font-weight: bold; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>基本情報技術者試験 修了認定 過去問道場</h1>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-btn active" id="tab-june" onclick="switchExam('june')">令和8年6月14日分</button>
+    <button class="tab-btn" id="tab-july" onclick="switchExam('july')">令和8年7月26日分</button>
+  </div>
+
+  <div class="score-sticky">
+    <div class="score-info">解答状況: <span id="done-count">0</span> / <span id="total-count">0</span> 問 ｜ 正解数: <span id="right-count">0</span> 問</div>
+    <button class="btn-reset" onclick="resetCurrentExam()">この回の履歴をリセット</button>
+  </div>
+
+  <div id="quiz-list"></div>
+</div>
+
+<script>
+// 問題データ (文字数制限のため各回デモ用に数問のみ収録。後から全60問の追加が可能です)
+const db = {
+  june: [
+    {
+      id: 1,
+      body: "絶対値の差が大きい複数の浮動小数点数の合計値を求める。情報落ちの発生を防ぐための工夫として、適切なものはどれか。",
+      options: [
+        { key: "ア", text: "絶対値の大きい順に計算する。" },
+        { key: "イ", text: "絶対値の差が大きい値同士を優先して計算する。" },
+        { key: "ウ", text: "絶対値の小さい順に計算する。" },
+        { key: "エ", text: "絶対値のほぼ等しい異符号同士の加算を減らすように計算する。" }
+      ],
+      ans: "ウ",
+      exp: "【正解：ウ】\n情報落ちは、絶対値の大きな数と小さな数の加減算を行った際、小さな数のデータが桁合わせによって無視されてしまう現象です。これを防ぐには「絶対値の小さい順に計算する」のが鉄則です。"
+    },
+    {
+      id: 2,
+      body: "天気の移り変わりが単純マルコフ過程であると考えたとき、雨の2日後が晴れである確率は何%か。\n\n[翌日の確率]\n晴れ→ (晴:40%, 曇:40%, 雨:20%)\n曇り→ (晴:30%, 曇:40%, 雨:30%)\n雨 → (晴:30%, 曇:50%, 雨:20%)",
+      options: [
+        { key: "ア", text: "15" },
+        { key: "イ", text: "27" },
+        { key: "ウ", text: "30" },
+        { key: "エ", text: "33" }
+      ],
+      ans: "エ",
+      exp: "【正解：エ】\n雨の翌日(1日後)の確率は [晴:30%, 曇:50%, 雨:20%] です。\n2日後が「晴れ」になるパターンは以下の3通り：\n① 雨→晴(0.3)→晴(0.4) = 0.12 (12%)\n② 雨→曇(0.5)→晴(0.3) = 0.15 (15%)\n③ 雨→雨(0.2)→晴(0.3) = 0.06 (6%)\n合計：12 + 15 + 6 = 33%"
+    }
+  ],
+  july: [
+    {
+      id: 1,
+      body: "実数を \\(a = f \\times r^e\\) と表す浮動小数点表示に関する記述として、適切なものはどれか。",
+      options: [
+        { key: "ア", text: "fを仮数, eを指数, rを基数という。" },
+        { key: "イ", text: "fを基数, eを仮数, rを指数という。" },
+        { key: "ウ", text: "fを基数, eを指数, rを仮数という。" },
+        { key: "エ", text: "fを指数, eを基数, rを仮数という。" }
+      ],
+      ans: "ア",
+      exp: "【正解：ア】\n浮動小数点数は「仮数 × 基数^指数」で表されます。\n・f (fraction): 仮数\n・r (radix): 基数\n・e (exponent): 指数"
+    },
+    {
+      id: 2,
+      body: "ある部品の長さは、平均 \\(\\mu\\) ,標準偏差 \\(\\sigma\\) の正規分布に従う。良品の合格基準を \\(\\mu \\pm n\\sigma\\) で表すとき、不良品の比率を5%未満に抑えるためのnの値として、最も近いものはどれか。",
+      options: [
+        { key: "ア", text: "1.0" },
+        { key: "イ", text: "1.6" },
+        { key: "ウ", text: "2.0" },
+        { key: "エ", text: "3.0" }
+      ],
+      ans: "ウ",
+      exp: "【正解：ウ】\n正規分布の性質として、\\(\\mu \\pm 1\\sigma\\) に約68%、\\(\\mu \\pm 2\\sigma\\) に約95%、\\(\\mu \\pm 3\\sigma\\) に約99.7%が含まれます。\n不良品（範囲外）を5%未満（つまり良品を95%以上）にするには、\\(n=2\\)（約95%）が最も近い値となります。"
+    }
+  ]
+};
+
+// 状態管理
+let currentExam = 'june';
+const state = {
+  june: { answered: new Set(), correct: 0 },
+  july: { answered: new Set(), correct: 0 }
+};
+
+function switchExam(examKey) {
+  currentExam = examKey;
+  document.getElementById('tab-june').className = examKey === 'june' ? 'tab-btn active' : 'tab-btn';
+  document.getElementById('tab-july').className = examKey === 'july' ? 'tab-btn active' : 'tab-btn';
+  renderQuiz();
+}
+
+function renderQuiz() {
+  const container = document.getElementById('quiz-list');
+  container.innerHTML = '';
+  const questions = db[currentExam];
+  const currentState = state[currentExam];
+
+  document.getElementById('total-count').innerText = questions.length;
+  updateScore();
+
+  questions.forEach(q => {
+    const card = document.createElement('div');
+    card.className = 'q-box';
+    
+    let optsHtml = '';
+    q.options.forEach(opt => {
+      // 既に解答済みの場合はボタンを無効化し、色をつける
+      let btnClass = 'opt-item';
+      let isAnswered = currentState.answered.has(q.id);
+      
+      optsHtml += `
+        <button class="${btnClass}" onclick="onSelect(${q.id}, '${opt.key}')" id="opt-${currentExam}-${q.id}-${opt.key}">
+          <span class="opt-tag">${opt.key}</span>
+          <span>${opt.text}</span>
+        </button>
+      `;
+    });
+
+    card.innerHTML = `
+      <div class="q-num">問 ${q.id}</div>
+      <div class="q-body">${q.body}</div>
+      <div class="opt-list">
+        ${optsHtml}
+      </div>
+      <div class="exp-section" id="exp-${currentExam}-${q.id}"></div>
+    `;
+    container.appendChild(card);
+  });
+
+  // MathJaxで数式をレンダリング（LaTeX記法を綺麗な数式に変換）
+  if (window.MathJax) {
+    MathJax.typesetPromise();
+  }
+}
+
+function onSelect(qid, pickedKey) {
+  const currentState = state[currentExam];
+  if (currentState.answered.has(qid)) return; // 解答済みなら無視
+  
+  currentState.answered.add(qid);
+  const q = db[currentExam].find(item => item.id === qid);
+  const isRight = (pickedKey === q.ans);
+  
+  if (isRight) currentState.correct++;
+  updateScore();
+
+  // ボタンの装飾
+  q.options.forEach(opt => {
+    const el = document.getElementById(`opt-${currentExam}-${qid}-${opt.key}`);
+    el.classList.add('disabled');
+    if (opt.key === q.ans) {
+      el.classList.add('correct');
+    } else if (opt.key === pickedKey && !isRight) {
+      el.classList.add('wrong');
+    }
+  });
+
+  // 解説の表示
+  const expBox = document.getElementById(`exp-${currentExam}-${qid}`);
+  expBox.className = `exp-section show ${isRight ? 'is-correct' : 'is-wrong'}`;
+  const headerHtml = isRight 
+    ? `<div class="exp-header" style="color: #16a34a;">⭕ 正解！（正解：${q.ans}）</div>` 
+    : `<div class="exp-header" style="color: #dc2626;">❌ 不正解…（正解：${q.ans} / あなたの回答：${pickedKey}）</div>`;
+  expBox.innerHTML = headerHtml + `<div>${q.exp}</div>`;
+  
+  if (window.MathJax) MathJax.typesetPromise([expBox]);
+}
+
+function updateScore() {
+  document.getElementById('done-count').innerText = state[currentExam].answered.size;
+  document.getElementById('right-count').innerText = state[currentExam].correct;
+}
+
+function resetCurrentExam() {
+  state[currentExam].answered.clear();
+  state[currentExam].correct = 0;
+  renderQuiz();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// 初期描画
+window.onload = renderQuiz;
+</script>
+
+</body>
+</html>
