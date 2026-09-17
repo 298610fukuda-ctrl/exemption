@@ -47,11 +47,10 @@
     <button class="tab-btn" id="tab-jan" onclick="switchExam('jan')">令和8年1月25日分（60問）</button>
   </div>
 
-  <div class="score-sticky">
-    <div>進捗: <span id="done-count">0</span> / 0問 ｜ 正解: <span id="right-count">0</span> 問</div>
-    <button class="btn-reset" onclick="resetCurrentExam()">履歴リセット</button>
-  </div>
-
+ <div class="score-sticky">
+  <div>進捗: <span id="done-count">0</span> / <span id="total-count">0</span>問 ｜ 正解: <span id="right-count">0</span> 問</div>
+  <button class="btn-reset" onclick="resetCurrentExam()">履歴リセット</button>
+</div>
   <div id="quiz-list"></div>
 </div>
 
