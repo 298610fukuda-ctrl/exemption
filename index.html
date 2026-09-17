@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>基本情報技術者 科目A免除修了試験 全120問</title>
+<title>基本情報技術者 科目A免除修了試験 全180問</title>
 <style>
   :root {
     --primary: #0284c7; --primary-hover: #0369a1; --bg: #f8fafc; --card: #ffffff;
@@ -44,11 +44,11 @@
     <button class="tab-btn active" id="tab-june" onclick="switchExam('june')">令和8年6月14日分（60問）</button>
     <button class="tab-btn" id="tab-july" onclick="switchExam('july')">令和8年7月26日分（60問）</button>
     <!-- ↓ これを追加 ↓ -->
-    <button class="tab-btn" id="tab-jan" onclick="switchExam('jan')">令和8年1月25日分（31問）</button>
+    <button class="tab-btn" id="tab-jan" onclick="switchExam('jan')">令和8年1月25日分（60問）</button>
   </div>
 
   <div class="score-sticky">
-    <div>進捗: <span id="done-count">0</span> / 60 問 ｜ 正解: <span id="right-count">0</span> 問</div>
+    <div>進捗: <span id="done-count">0</span> / 0問 ｜ 正解: <span id="right-count">0</span> 問</div>
     <button class="btn-reset" onclick="resetCurrentExam()">履歴リセット</button>
   </div>
 
@@ -264,7 +264,7 @@ function renderQuiz() {
   container.innerHTML = '';
   const currentData = state[currentExam].data;
   const currentState = state[currentExam];
-
+document.getElementById('total-count').innerText = currentData.length;
   updateScore();
 
   currentData.forEach(qData => {
