@@ -38,7 +38,7 @@
 <body>
 
 <div class="container">
-  <h1>基本情報技術者 科目A免除修了試験 全120問</h1>
+  <h1>基本情報技術者 科目A免除修了試験 全180問</h1>
   
   <div class="tabs">
     <button class="tab-btn active" id="tab-june" onclick="switchExam('june')">令和8年6月14日分（60問）</button>
@@ -249,7 +249,7 @@ let currentExam = 'june';
 const state = {
   june: { answered: new Set(), correct: 0, data: rawJune },
   july: { answered: new Set(), correct: 0, data: rawJuly },
-  jan: { answered: new Set(), correct: 0, data: rawJan }
+  jan: { answered: new Set(), correct: 0, data: rawJan2026 }
 };
 
 function switchExam(examKey) {
